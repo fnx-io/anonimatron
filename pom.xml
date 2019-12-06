@@ -4,12 +4,12 @@
 
     <groupId>com.rolfje.anonimatron</groupId>
     <artifactId>anonimatron</artifactId>
-    <version>1.11.2-SNAPSHOT</version>
+    <version>MA-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>anonimatron</name>
+    <name>anonimatron MA</name>
     <description>Database and file anonymization tool which is consistent between runs.</description>
-    <url>https://realrolfje.github.io/anonimatron/</url>
+    <url>https://github.com/fnx-io/anonimatron/</url>
 
     <licenses>
         <license>
@@ -20,15 +20,15 @@
 
     <developers>
         <developer>
-            <name>Rolf</name>
-            <organizationUrl>https://github.com/realrolfje</organizationUrl>
+            <name>fnx-io</name>
+            <organizationUrl>https://fnx.io/</organizationUrl>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com:realrolfje/anonimatron.git</connection>
-        <developerConnection>scm:git:ssh://github.com:realrolfje/anonimatron.git</developerConnection>
-        <url>https://github.com/realrolfje/anonimatron</url>
+        <connection>scm:git:git://github.com:fnx-io/anonimatron.git</connection>
+        <developerConnection>scm:git:ssh://github.com:fnx-io/anonimatron.git</developerConnection>
+        <url>https://github.com/fnx-io/anonimatron.git</url>
     </scm>
 
     <distributionManagement>
@@ -38,12 +38,12 @@
          http://central.sonatype.org/pages/apache-maven.html#performing-a-snapshot-deployment
          -->
         <snapshotRepository>
-            <id>sonatype-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>fnx-snapshots</id>
+            <url>https://fnx-maven-repository.storage.googleapis.com/snapshots</url>
         </snapshotRepository>
         <repository>
-            <id>sonatype-release</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+            <id>fnx-releases</id>
+            <url>https://fnx-maven-repository.storage.googleapis.com/releases</url>
         </repository>
     </distributionManagement>
 
@@ -189,37 +189,6 @@
             <id>release</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <!-- Signs all deployable artifacts during "verify" stage -->
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- realrolfje@users.noreply.github.com -->
-                                    <!-- new key, replaces the old key -->
-                                    <keyname>45E2A5E085182DC26EFEF6E796BB2760490D54DD</keyname>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.8</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
