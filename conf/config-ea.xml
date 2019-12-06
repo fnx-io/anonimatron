@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration salt="easalt"
+               jdbcurl="jdbc:postgresql://localhost:5432/ea" userid="ea" password="ea">
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.ProjectNameAnonymizer</anonymizerclass>
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.CompanyNameAnonymizer</anonymizerclass>
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.PersonalIdentificationNumberAnonymizer</anonymizerclass>
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.IcoNumberAnonymizer</anonymizerclass>
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.DicNumberAnonymizer</anonymizerclass>
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.FirstNameAnonymizer</anonymizerclass>
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.LastNameAnonymizer</anonymizerclass>
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.StreetNameAnonymizer</anonymizerclass>
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.TownNameAnonymizer</anonymizerclass>
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.LoremAnonymizer</anonymizerclass>
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.BankNameAnonymizer</anonymizerclass>
+    <anonymizerclass>io.fnx.anonimatron.anonymizer.PhoneAnonymizer</anonymizerclass>
+
+    <table name="ea_activity_log">
+        <column name="action_detail" type="LOREM" size="500" shortlived="true">
+                <parameter id="maxLenght">100</parameter>
+        </column>
+    </table>
+    <table name="ea_acts">
+        <column name="note" type="LOREM" size="1000" shortlived="true">
+            <parameter id="maxLenght">200</parameter>
+        </column>
+    </table>
+    <table name="ea_addresses">
+        <column name="street" type="STREET" size="255"/>
+        <column name="city" type="TOWN" size="255"/>
+        <column name="country" type="COUNTRY_CODE" size="50"/>
+        <column name="zip" type="RANDOMDIGITS" size="10"/>
+    </table>
+
+    <table name="ea_calls_for_payment">
+        <column name="name" type="LOREM" size="256" shortlived="true">
+            <parameter id="maxLenght">100</parameter>
+        </column>
+        <column name="description" type="LOREM" size="1000" shortlived="true">
+            <parameter id="maxLenght">200</parameter>
+        </column>
+    </table>
+
+    <table name="ea_calls_for_payment_history">
+        <column name="note" type="LOREM" size="1000" shortlived="true">
+            <parameter id="maxLenght">200</parameter>
+        </column>
+    </table>
+
+    <table name="ea_chats">
+        <column name="topic" type="LOREM" size="64" shortlived="true">
+            <parameter id="maxLenght">30</parameter>
+        </column>
+        <column name="email" type="EMAIL_ADDRESS" size="120"/>
+    </table>
+
+    <table name="ea_clients">
+        <column name="name" type="COMPANYNAME" size="124"/>
+        <column name="note" type="LOREM" size="1000" shortlived="true" />
+        <column name="email" type="EMAIL_ADDRESS" size="1000"/>
+        <column name="phone" type="RANDOMDIGITS" size="20"/>
+        <column name="ic" type="ICO" size="50"/>
+        <column name="dic" type="DIC" size="50"/>
+        <column name="agent" type="ROMAN_NAME" size="50"/>
+        <column name="note" type="LOREM" size="1000" shortlived="true">
+            <parameter id="maxLenght">200</parameter>
+        </column>
+    </table>
+
+    <table name="ea_documents">
+        <column name="name" type="LOREM" size="100" shortlived="true">
+            <parameter id="maxLenght">50</parameter>
+        </column>
+        <column name="note" type="LOREM" size="100" shortlived="true">
+            <parameter id="maxLenght">200</parameter>
+        </column>
+    </table>
+
+    <table name="ea_folders">
+        <column name="name" type="LOREM" size="256" shortlived="true">
+            <parameter id="maxLenght">500</parameter>
+        </column>
+    </table>
+
+
+    <table name="ea_invoice_line">
+        <column name="note" type="LOREM" size="100" shortlived="true">
+            <parameter id="maxLenght">500</parameter>
+        </column>
+    </table>
+
+    <table name="ea_invoices">
+        <column name="address_street" type="STREET" size="255"/>
+        <column name="address_city" type="TOWN" size="255"/>
+        <column name="address_country" type="COUNTRY_CODE" size="50"/>
+        <column name="address_zip" type="RANDOMDIGITS" size="10"/>
+        <column name="business_name" type="COMPANYNAME" size="127"/>
+        <column name="contact_first_name" type="FIRSTNAME" size="127"/>
+        <column name="contact_first_name" type="LASTNAME" size="127"/>
+    </table>
+
+    <table name="ea_lawyers">
+        <column name="name" type="ROMAN_NAME" size="50"/>
+        <column name="name_en" type="ROMAN_NAME" size="50"/>
+        <column name="bank" type="BANKNAME" size="100"/>
+        <column name="bank_en" type="BANKNAME" size="100"/>
+        <column name="bank_detail" type="BANKNAME" size="150"/>
+        <column name="bank_detail_en" type="BANKNAME" size="150"/>
+        <column name="account_no" type="DUTCHBANKACCOUNT" size="32"/>
+        <column name="ic" type="ICO" size="50"/>
+        <column name="dic" type="DIC" size="50"/>
+    </table>
+
+    <table name="ea_mail_queue">
+        <column name="email_to" type="EMAIL_ADDRESS" size="255"/>
+        <column name="subject" type="LOREM" size="255" shortlived="true"/>
+        <column name="message" type="LOREM" size="100" shortlived="true"/>
+    </table>
+
+    <table name="ea_messages">
+        <column name="text" type="LOREM" size="100" shortlived="true">
+            <parameter id="maxLenght">100</parameter>
+        </column>
+    </table>
+
+    <table name="ea_projects">
+        <column name="name" type="PROJECTNAME" size="200"/>
+        <column name="description" type="LOREM" size="100" shortlived="true">
+            <parameter id="maxLenght">100</parameter>
+        </column>
+    </table>
+
+    <table name="ea_transactions">
+        <column name="bank_no" type="PROJECTNAME" size="200"/>
+        <column name="account_no" type="DUTCHBANKACCOUNT" size="32"/>
+        <column name="bank_no" type="RANDOMDIGITS" size="4"/>
+        <column name="account_name" type="ELVEN_NAME" size="32"/>
+        <column name="note" type="LOREM" size="200" shortlived="true">
+            <parameter id="maxLenght">100</parameter>
+        </column>
+    </table>
+
+    <table name="ea_users">
+        <column name="first_name" type="FIRSTNAME" size="127"/>
+        <column name="last_name" type="LASTNAME" size="32"/>
+        <column name="email" type="EMAIL_ADDRESS" size="32"/>
+        <column name="phone" type="PHONE" size="32"/>
+        <column name="fax" type="PHONE" size="32"/>
+        <column name="birth_cert_no" type="RC" size="32"/>
+    </table>
+
+
+
+
+
+
+</configuration>
