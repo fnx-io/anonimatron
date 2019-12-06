@@ -77,7 +77,7 @@
 
     <table name="ea_folders">
         <column name="name" type="LOREM" size="256" shortlived="true">
-            <parameter id="maxLenght">500</parameter>
+            <parameter id="maxLenght">200</parameter>
         </column>
     </table>
 
