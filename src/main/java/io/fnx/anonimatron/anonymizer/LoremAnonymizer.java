@@ -34,10 +34,6 @@ public class LoremAnonymizer extends AbstractMaStringAnonymizer {
             } else if (from instanceof String) {
                 ramdomString = getRandom(maxLenght);
 
-                if (ramdomString.length() > size) {
-                    throw new UnsupportedOperationException("Can not generate a random hex string with length " + size
-                            + ". Generated String size is " + ramdomString.length() + " characters.");
-                }
             } else {
                 throw new UnsupportedOperationException("Can not anonymize objects of type " + from.getClass());
             }
