@@ -27,7 +27,7 @@ public class MaAnonymizerTest extends TestCase {
 
     public void testProjectName() throws IOException {
         ProjectNameAnonymizer pa = new ProjectNameAnonymizer();
-        assertEquals(pa.getRandom().split(" ").length,3);
+        assertTrue(pa.getRandom().split(" ").length>=3);
     }
 
     public void testLorem() throws IOException {
