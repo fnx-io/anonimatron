@@ -10,9 +10,11 @@ import java.io.IOException;
  */
 public class CompanyNameAnonymizer extends AbstractMaStringAnonymizer {
     String[] names;
+    String [] formManes;
 
     public CompanyNameAnonymizer() throws IOException {
        names = readLines("company.names");
+       formManes = readLines("companyForm.names");
     }
 
     @Override
@@ -22,6 +24,7 @@ public class CompanyNameAnonymizer extends AbstractMaStringAnonymizer {
 
     @Override
     public String getRandom() {
-        return String.format("%s %s %s",names[random.nextInt(names.length)],names[random.nextInt(names.length)],random.nextBoolean()?"a.s.":"s.r.o.");
+        return String.format("%s %s %s",names[random.nextInt(names.length)],names[random.nextInt(names.length)], formManes[random.nextInt(formManes.length)]);
     }
+
 }
