@@ -10,7 +10,8 @@ import java.util.function.IntFunction;
  * Hands out one generated value per key, never the same value for two keys and never the original
  * value itself. On a collision the next attempt is tried, so the result stays deterministic as long
  * as values are requested in the same order. When the space of values is too small to stay unique
- * (one digit house numbers), the first candidate differing from the original is used anyway.
+ * (one digit house numbers), the first candidate differing from the original is used anyway;
+ * a value the generator cannot change (no digits to mask) stays as it is.
  */
 final class UniqueValues {
 
@@ -39,7 +40,9 @@ final class UniqueValues {
             }
         }
         if (fallback == null) {
-            throw new IllegalStateException("No value different from the original found after " + MAX_ATTEMPTS + " attempts.");
+            // Every candidate equals the original: the generator has nothing to change
+            // (a masked value without digits, such as "neuvedeno").
+            fallback = original;
         }
         byKey.put(key, fallback);
         return fallback;

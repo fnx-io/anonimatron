@@ -2,7 +2,7 @@
 
 Fork of [realrolfje/anonimatron](https://github.com/realrolfje/anonimatron) with deterministic
 Czech anonymizers in `io.fnx.anonimatron.anonymizer`. Maven coordinates
-`io.fnx:anonimatron:1.17-fnx-3`, Java 17.
+`io.fnx:anonimatron:1.17-fnx-4`, Java 17.
 
 **Deterministic:** the replacement is computed from HMAC-SHA256(salt, original value), so the same
 database anonymized twice with the same secret salt gives the same result, without keeping a

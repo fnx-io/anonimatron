@@ -216,6 +216,12 @@ public class CzechAnonymizersTest {
         assertTrue(account, account.matches("[1-9]-\\d{9}/0100"));
     }
 
+    @Test
+    public void valueWithoutDigitsStaysAsItIs() {
+        assertEquals("neuvedeno", anonymize(salted(new NumberMaskAnonymizer()), "neuvedeno"));
+        assertEquals("neplátce", anonymize(salted(new DicNumberAnonymizer()), "neplátce"));
+    }
+
     @Test(timeout = 5000)
     public void tinyValueSpaceDoesNotFail() {
         NumberMaskAnonymizer anonymizer = salted(new NumberMaskAnonymizer());

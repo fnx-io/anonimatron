@@ -5,7 +5,7 @@
     <!-- fnx fork of realrolfje/anonimatron: deterministic Czech anonymizers (io.fnx.anonimatron). -->
     <groupId>io.fnx</groupId>
     <artifactId>anonimatron</artifactId>
-    <version>1.17-fnx-3</version>
+    <version>1.17-fnx-4</version>
     <packaging>jar</packaging>
 
     <name>anonimatron fnx</name>
