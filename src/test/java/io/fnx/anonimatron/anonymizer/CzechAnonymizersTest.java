@@ -239,6 +239,22 @@ public class CzechAnonymizersTest {
     }
 
     @Test
+    public void numberMaskNeverReturnsTheOriginal() {
+        NumberMaskAnonymizer anonymizer = salted(new NumberMaskAnonymizer(), "local-test-salt-1234");
+        for (int i = 1; i < 90; i++) {
+            assertNotEquals(String.valueOf(i), anonymize(anonymizer, String.valueOf(i)));
+        }
+    }
+
+    @Test
+    public void lowerCaseSoleTraderIsAnonymizedAsPerson() {
+        assertEquals(anonymize(salted(new FullNameAnonymizer()), "jan vzorový"),
+                anonymize(salted(new CompanyNameAnonymizer()), "jan vzorový"));
+        String person = anonymize(salted(new CompanyNameAnonymizer()), "jan vzorový");
+        assertEquals(person.toLowerCase(), person);
+    }
+
+    @Test
     public void streetKeepsHouseNumberShape() {
         String street = anonymize(salted(new StreetNameAnonymizer()), "Nádražní 1234/5");
         assertTrue(street, street.matches(".+ [1-9]\\d{3}/[1-9]"));

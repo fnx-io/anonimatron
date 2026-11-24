@@ -43,7 +43,7 @@ public class CompanyNameAnonymizer extends DeterministicAnonymizer {
 
     private String company(String base) {
         String key = CzechText.normalize(base);
-        return companies.get(key, attempt -> {
+        return companies.get(key, key, attempt -> {
             Random random = random(getType(), key, attempt);
             String compound = PREFIXES.pick(random) + SUFFIXES.pick(random);
             String surname = CzechNames.pickSurname(random).male;

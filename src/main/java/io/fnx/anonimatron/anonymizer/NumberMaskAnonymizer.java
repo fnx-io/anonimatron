@@ -17,6 +17,6 @@ public class NumberMaskAnonymizer extends DeterministicAnonymizer {
 
     @Override
     protected String generate(String from, Map<String, String> parameters) {
-        return values.get(from, attempt -> CzechText.maskDigits(from, random(getType(), from, attempt)));
+        return values.get(from, from, attempt -> CzechText.maskDigits(from, random(getType(), from, attempt)));
     }
 }

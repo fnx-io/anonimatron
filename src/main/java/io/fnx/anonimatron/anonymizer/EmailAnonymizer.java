@@ -41,7 +41,7 @@ public class EmailAnonymizer extends DeterministicAnonymizer {
 
     private String address(String original) {
         String key = original.trim().toLowerCase(Locale.ROOT);
-        return addresses.get(key, attempt -> {
+        return addresses.get(key, key, attempt -> {
             Random random = random(getType(), key, attempt);
             StringBuilder local = new StringBuilder("anonym.");
             for (int i = 0; i < LOCAL_LENGTH; i++) {

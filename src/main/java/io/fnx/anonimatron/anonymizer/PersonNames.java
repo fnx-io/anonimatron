@@ -81,12 +81,16 @@ final class PersonNames {
         return result.append(person(text.substring(start))).toString();
     }
 
-    /** True when the text contains a word that is a known Czech first name. */
+    /**
+     * True when the text contains a known Czech first name: capitalised, or in any case when the
+     * whole text is written in lower case ("jan novák").
+     */
     static boolean mentionsFirstName(String text) {
+        boolean anyCase = text.equals(text.toLowerCase(java.util.Locale.ROOT));
         Matcher matcher = WORD.matcher(text);
         while (matcher.find()) {
             String word = matcher.group();
-            if (Character.isUpperCase(word.charAt(0)) && CzechNames.isKnownFirstName(word)) {
+            if ((anyCase || Character.isUpperCase(word.charAt(0))) && CzechNames.isKnownFirstName(word)) {
                 return true;
             }
         }

@@ -45,20 +45,20 @@ final class CzechIdentifiers {
         if (RodneCislo.parse(body) != null) {
             return prefix + birthNumber(body);
         }
-        return others.get(trimmed, attempt -> CzechText.maskDigits(trimmed, random("OTHER", trimmed, attempt)));
+        return others.get(trimmed, trimmed, attempt -> CzechText.maskDigits(trimmed, random("OTHER", trimmed, attempt)));
     }
 
     /** IČO; shorter numbers are IČO that lost their leading zeros. */
     String ico(String digits) {
         String key = String.format("%8s", digits).replace(' ', '0');
-        return icos.get(key, attempt -> Ico.generate(random("ICO", key, attempt)));
+        return icos.get(key, key, attempt -> Ico.generate(random("ICO", key, attempt)));
     }
 
     /** Birth number of the same gender and similar age; a value that is not one gets a random one. */
     String birthNumber(String value) {
         String key = CzechText.digitsOnly(value);
         RodneCislo original = RodneCislo.parse(value);
-        String digits = birthNumbers.get(key, attempt -> {
+        String digits = birthNumbers.get(key, key, attempt -> {
             Random random = random("RC", key, attempt);
             String generated = original != null
                     ? original.similar(random)
