@@ -1,14 +1,12 @@
 package io.fnx.anonimatron.anonymizer;
 
-import io.fnx.anonimatron.tools.IcoGenerator;
+import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: arnoststedry
- * Date: 02/12/2019
- * Time: 14:02
+ * DIC: "CZ" + IČO becomes "CZ" + the anonymized IČO (so DIČ matches the ICO column), "CZ" + birth
+ * number becomes "CZ" + a birth number of the same gender and similar age.
  */
-public class DicNumberAnonymizer extends AbstractMaStringAnonymizer {
+public class DicNumberAnonymizer extends DeterministicAnonymizer {
 
     @Override
     public String getType() {
@@ -16,7 +14,7 @@ public class DicNumberAnonymizer extends AbstractMaStringAnonymizer {
     }
 
     @Override
-    public String getRandom() {
-        return IcoGenerator.generateDic();
+    protected String generate(String from, Map<String, String> parameters) {
+        return CzechIdentifiers.of(seeds()).identifier(from);
     }
 }

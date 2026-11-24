@@ -1,14 +1,12 @@
 package io.fnx.anonimatron.anonymizer;
 
-import io.fnx.anonimatron.tools.IcoGenerator;
+import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: arnoststedry
- * Date: 02/12/2019
- * Time: 14:02
+ * ICO: valid, unique IČO. A value shaped like a birth number (sole traders) becomes a birth number,
+ * anything else keeps its shape with masked digits.
  */
-public class IcoNumberAnonymizer extends AbstractMaStringAnonymizer {
+public class IcoNumberAnonymizer extends DeterministicAnonymizer {
 
     @Override
     public String getType() {
@@ -16,7 +14,7 @@ public class IcoNumberAnonymizer extends AbstractMaStringAnonymizer {
     }
 
     @Override
-    public String getRandom() {
-        return IcoGenerator.generateIco();
+    protected String generate(String from, Map<String, String> parameters) {
+        return CzechIdentifiers.of(seeds()).identifier(from);
     }
 }

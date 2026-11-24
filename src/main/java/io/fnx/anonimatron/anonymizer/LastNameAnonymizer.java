@@ -1,19 +1,12 @@
 package io.fnx.anonimatron.anonymizer;
 
-import java.io.IOException;
+import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: arnoststedry
- * Date: 02/12/2019
- * Time: 14:02
+ * LASTNAME: Czech surname in the same gender form; Novák and Nováková get the male and female
+ * form of the same replacement.
  */
-public class LastNameAnonymizer extends AbstractMaStringAnonymizer {
-    String[] names;
-
-    public LastNameAnonymizer() throws IOException {
-       names = readLines("names.last");
-    }
+public class LastNameAnonymizer extends DeterministicAnonymizer {
 
     @Override
     public String getType() {
@@ -21,7 +14,7 @@ public class LastNameAnonymizer extends AbstractMaStringAnonymizer {
     }
 
     @Override
-    public String getRandom() {
-        return names[random.nextInt(names.length)];
+    protected String generate(String from, Map<String, String> parameters) {
+        return new PersonNames(seeds()).surnames(from);
     }
 }

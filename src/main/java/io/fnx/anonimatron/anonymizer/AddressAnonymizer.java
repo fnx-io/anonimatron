@@ -1,21 +1,16 @@
 package io.fnx.anonimatron.anonymizer;
 
-import java.io.IOException;
+import java.util.Map;
+import java.util.Random;
 
 /**
- * Created with IntelliJ IDEA.
- * User: arnoststedry
- * Date: 02/12/2019
- * Time: 14:02
+ * ADDRESS: whole address in one column, "town, street number".
  */
-public class AddressAnonymizer extends AbstractMaStringAnonymizer {
-    String[] streets;
-    String[] towns;
+public class AddressAnonymizer extends DeterministicAnonymizer {
 
-    public AddressAnonymizer() throws IOException {
-        streets = readLines("address.street");
-        towns = readLines("address.town");
-    }
+    private static final WordList STREETS = WordList.load("address.street");
+    private static final WordList TOWNS = WordList.load("address.town");
+    private static final int MAX_HOUSE_NUMBER = 150;
 
     @Override
     public String getType() {
@@ -23,7 +18,8 @@ public class AddressAnonymizer extends AbstractMaStringAnonymizer {
     }
 
     @Override
-    public String getRandom() {
-        return String.format("%s, %s, %s",towns[random.nextInt(towns.length)],streets[random.nextInt(streets.length)],random.nextInt(150) );
+    protected String generate(String from, Map<String, String> parameters) {
+        Random random = random(CzechText.normalize(from));
+        return TOWNS.pick(random) + ", " + STREETS.pick(random) + " " + (1 + random.nextInt(MAX_HOUSE_NUMBER));
     }
 }

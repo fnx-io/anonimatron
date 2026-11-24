@@ -71,6 +71,9 @@ public class Anonimatron {
 		if (commandLine.getPassword() != null) {
 			config.setPassword(commandLine.getPassword());
 		}
+		if (commandLine.getSalt() != null) {
+			config.setSalt(commandLine.getSalt());
+		}
 		config.setDryrun(commandLine.isDryrun());
 		return config;
 	}
@@ -88,6 +91,9 @@ public class Anonimatron {
 		// Create Anononymizer service
 		AnonymizerService anonymizerService = new AnonymizerService(synonymCache);
 		anonymizerService.registerAnonymizers(config.getAnonymizerClasses());
+		if (salt != null && salt.length() > 0) {
+			anonymizerService.setSalt(salt);
+		}
 
 		boolean didWork = false;
 

@@ -17,6 +17,7 @@ public class CommandLine {
     private static final String OPT_SYNONYMFILE = "synonyms";
     private static final String OPT_DRYRUN = "dryrun";
     private static final String OPT_CONFIGEXAMPLE = "configexample";
+    private static final String OPT_SALT = "salt";
 
     private static final Options options = new Options()
             .addOption(OPT_CONFIGFILE, true,
@@ -35,6 +36,9 @@ public class CommandLine {
                             "If provided, overrides the value in the config file.")
             .addOption(OPT_PASSWORD, true,
                     "The password for the database connection. " +
+                            "If provided, overrides the value in the config file.")
+            .addOption(OPT_SALT, true,
+                    "The secret salt for hashing synonyms and seeding deterministic anonymizers. " +
                             "If provided, overrides the value in the config file.");
 
     private final org.apache.commons.cli.CommandLine clicommandLine;
@@ -71,6 +75,10 @@ public class CommandLine {
 
     public String getPassword() {
         return clicommandLine.getOptionValue(CommandLine.OPT_PASSWORD);
+    }
+
+    public String getSalt() {
+        return clicommandLine.getOptionValue(CommandLine.OPT_SALT);
     }
 
     public String getConfigfileName() {

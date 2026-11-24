@@ -1,19 +1,13 @@
 package io.fnx.anonimatron.anonymizer;
 
-import java.io.IOException;
+import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: arnoststedry
- * Date: 02/12/2019
- * Time: 14:02
+ * BANKNAME: name of a Czech bank; the same value always gets the same replacement.
  */
-public class BankNameAnonymizer extends AbstractMaStringAnonymizer {
-    String[] names;
+public class BankNameAnonymizer extends DeterministicAnonymizer {
 
-    public BankNameAnonymizer() throws IOException {
-       names = readLines("bank.names");
-    }
+    private static final WordList NAMES = WordList.load("bank.names");
 
     @Override
     public String getType() {
@@ -21,7 +15,7 @@ public class BankNameAnonymizer extends AbstractMaStringAnonymizer {
     }
 
     @Override
-    public String getRandom() {
-        return names[random.nextInt(names.length)];
+    protected String generate(String from, Map<String, String> parameters) {
+        return NAMES.pick(random(CzechText.normalize(from)));
     }
 }

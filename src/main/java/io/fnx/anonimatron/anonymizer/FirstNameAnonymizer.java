@@ -1,19 +1,11 @@
 package io.fnx.anonimatron.anonymizer;
 
-import java.io.IOException;
+import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: arnoststedry
- * Date: 02/12/2019
- * Time: 14:02
+ * FIRSTNAME: Czech first name of the same gender; the same name always gets the same replacement.
  */
-public class FirstNameAnonymizer extends AbstractMaStringAnonymizer {
-    String[] names;
-
-    public FirstNameAnonymizer() throws IOException {
-       names = readLines("names.first");
-    }
+public class FirstNameAnonymizer extends DeterministicAnonymizer {
 
     @Override
     public String getType() {
@@ -21,7 +13,7 @@ public class FirstNameAnonymizer extends AbstractMaStringAnonymizer {
     }
 
     @Override
-    public String getRandom() {
-        return names[random.nextInt(names.length)];
+    protected String generate(String from, Map<String, String> parameters) {
+        return new PersonNames(seeds()).firstNames(from);
     }
 }

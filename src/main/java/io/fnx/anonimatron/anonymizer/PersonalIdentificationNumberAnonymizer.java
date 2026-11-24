@@ -1,21 +1,20 @@
 package io.fnx.anonimatron.anonymizer;
 
-import io.fnx.anonimatron.tools.RcGenerator;
+import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: arnoststedry
- * Date: 02/12/2019
- * Time: 14:02
+ * RC: valid, unique birth number (rodné číslo) of the same gender, born within two years of the
+ * original, with or without the slash like the original.
  */
-public class PersonalIdentificationNumberAnonymizer  extends AbstractMaStringAnonymizer {
+public class PersonalIdentificationNumberAnonymizer extends DeterministicAnonymizer {
 
     @Override
     public String getType() {
         return "RC";
     }
 
-    public String getRandom() {
-        return RcGenerator.generateRc();
+    @Override
+    protected String generate(String from, Map<String, String> parameters) {
+        return CzechIdentifiers.of(seeds()).birthNumber(from);
     }
 }

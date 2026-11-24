@@ -1,19 +1,13 @@
 package io.fnx.anonimatron.anonymizer;
 
-import java.io.IOException;
+import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: arnoststedry
- * Date: 02/12/2019
- * Time: 14:02
+ * TOWN: town or village name from a list of Czech municipalities; the same value always gets the same replacement.
  */
-public class TownNameAnonymizer extends AbstractMaStringAnonymizer {
-    String[] names;
+public class TownNameAnonymizer extends DeterministicAnonymizer {
 
-    public TownNameAnonymizer() throws IOException {
-       names = readLines("address.town");
-    }
+    private static final WordList NAMES = WordList.load("address.town");
 
     @Override
     public String getType() {
@@ -21,7 +15,7 @@ public class TownNameAnonymizer extends AbstractMaStringAnonymizer {
     }
 
     @Override
-    public String getRandom() {
-        return names[random.nextInt(names.length)];
+    protected String generate(String from, Map<String, String> parameters) {
+        return NAMES.pick(random(CzechText.normalize(from)));
     }
 }

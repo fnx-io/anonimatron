@@ -1,75 +1,16 @@
 package io.fnx.anonimatron.anonymizer;
 
-import com.rolfje.anonimatron.synonyms.StringSynonym;
-import com.rolfje.anonimatron.synonyms.Synonym;
-
-import java.io.IOException;
 import java.util.Map;
+import java.util.Random;
 
 /**
- * Created with IntelliJ IDEA.
- * User: arnoststedry
- * Date: 02/12/2019
- * Time: 14:02
+ * LOREM: lorem ipsum shorter than the parameter {@code maxLength} (default 25;
+ * {@code maxLenght} is accepted for older configurations).
  */
-public class LoremAnonymizer extends AbstractMaStringAnonymizer {
-    String[] names;
+public class LoremAnonymizer extends DeterministicAnonymizer {
 
-    public LoremAnonymizer() throws IOException {
-       names = readLines("lorem.txt");
-    }
-
-    @Override
-    public Synonym anonymize(Object from, int size, boolean shortlived, Map<String, String> parameters) {
-
-        int maxLenght = 25;
-        if(parameters!=null && parameters.containsKey("maxLenght")){
-            maxLenght = Integer.parseInt(parameters.get("maxLenght"));
-        }
-
-        String ramdomString;
-
-            if (from == null) {
-                ramdomString = null;
-            } else if (from instanceof String) {
-                ramdomString = getRandom(maxLenght);
-
-            } else {
-                throw new UnsupportedOperationException("Can not anonymize objects of type " + from.getClass());
-            }
-            return new StringSynonym(
-                    getType(),
-                    (String) from,
-                    ramdomString,
-                    shortlived
-            );
-    }
-
-
-
-    public String getRandom(int size) {
-        StringBuilder sb = new StringBuilder();
-        String word = getRandom();
-        word = ucfirst(word);
-        while (sb.length()+word.length()<=size-1){
-            String afterString;
-            int after = random.nextInt(11);
-            if(after<7){
-                afterString=" ";
-            } else if(after<=9){
-                afterString=", ";
-            } else {
-                afterString=". ";
-            }
-            sb.append(word).append(afterString);
-            word = afterString.startsWith(".")? ucfirst(getRandom()) : getRandom() ;
-        }
-        return sb.toString();
-    }
-
-    private String ucfirst(String word) {
-        return word.substring(0,1).toLowerCase().concat(word.substring(1));
-    }
+    private static final WordList WORDS = WordList.load("lorem.txt");
+    private static final int DEFAULT_MAX_LENGTH = 25;
 
     @Override
     public String getType() {
@@ -77,7 +18,26 @@ public class LoremAnonymizer extends AbstractMaStringAnonymizer {
     }
 
     @Override
-    public String getRandom() {
-        return names[random.nextInt(names.length)];
+    protected String generate(String from, Map<String, String> parameters) {
+        int maxLength = maxLength(parameters);
+        Random random = random(from);
+        StringBuilder text = new StringBuilder();
+        String word = capitalize(WORDS.pick(random));
+        while (text.length() + word.length() < maxLength) {
+            int pause = random.nextInt(11);
+            String separator = pause < 7 ? " " : pause < 10 ? ", " : ". ";
+            text.append(word).append(separator);
+            word = separator.startsWith(".") ? capitalize(WORDS.pick(random)) : WORDS.pick(random);
+        }
+        return text.toString().trim();
+    }
+
+    private static int maxLength(Map<String, String> parameters) {
+        String value = parameters.getOrDefault("maxLength", parameters.get("maxLenght"));
+        return value == null ? DEFAULT_MAX_LENGTH : Integer.parseInt(value);
+    }
+
+    private static String capitalize(String word) {
+        return word.isEmpty() ? word : Character.toUpperCase(word.charAt(0)) + word.substring(1);
     }
 }

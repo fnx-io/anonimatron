@@ -74,6 +74,17 @@ public class AnonymizerService {
 		LOG.info(anonymizers.size()+" anonymizers registered.");
 	}
 
+	/**
+	 * Passes the configured salt to every registered {@link SaltedAnonymizer}.
+	 */
+	public void setSalt(String salt) {
+		for (Anonymizer anonymizer : customAnonymizers.values()) {
+			if (anonymizer instanceof SaltedAnonymizer) {
+				((SaltedAnonymizer) anonymizer).setSalt(salt);
+			}
+		}
+	}
+
 	public Set<String> getCustomAnonymizerTypes() {
 		return Collections.unmodifiableSet(customAnonymizers.keySet());
 	}
