@@ -12,6 +12,7 @@ final class CzechBankAccount {
 
     private static final Pattern FORMAT = Pattern.compile("(?:(\\d{1,6})-)?(\\d{2,10})/(\\d{4})");
     private static final int[] WEIGHTS = {6, 3, 7, 9, 10, 5, 8, 4, 2, 1};
+    private static final int MAX_ATTEMPTS = 1000;
 
     private CzechBankAccount() {
     }
@@ -34,17 +35,25 @@ final class CzechBankAccount {
                 && passesCheck(matcher.group(2));
     }
 
+    /**
+     * Digits of the given length passing the mod 11 check; for a length where no such number
+     * exists (a one digit prefix other than 0), digits without the check.
+     */
     private static String validNumber(int length, Random random) {
-        while (true) {
-            StringBuilder digits = new StringBuilder(length);
-            digits.append(1 + random.nextInt(9));
-            for (int i = 1; i < length; i++) {
-                digits.append(random.nextInt(10));
-            }
-            if (passesCheck(digits.toString())) {
-                return digits.toString();
-            }
+        String digits = randomDigits(length, random);
+        for (int attempt = 1; attempt < MAX_ATTEMPTS && !passesCheck(digits); attempt++) {
+            digits = randomDigits(length, random);
         }
+        return digits;
+    }
+
+    private static String randomDigits(int length, Random random) {
+        StringBuilder digits = new StringBuilder(length);
+        digits.append(1 + random.nextInt(9));
+        for (int i = 1; i < length; i++) {
+            digits.append(random.nextInt(10));
+        }
+        return digits.toString();
     }
 
     private static boolean passesCheck(String digits) {

@@ -210,6 +210,26 @@ public class CzechAnonymizersTest {
         assertNotEquals("19-2000145399/0800", account);
     }
 
+    @Test(timeout = 5000)
+    public void bankAccountWithOneDigitPrefixFinishes() {
+        String account = anonymize(salted(new BankAccountAnonymizer()), "5-123456789/0100");
+        assertTrue(account, account.matches("[1-9]-\\d{9}/0100"));
+    }
+
+    @Test(timeout = 5000)
+    public void tinyValueSpaceDoesNotFail() {
+        NumberMaskAnonymizer anonymizer = salted(new NumberMaskAnonymizer());
+        for (int round = 0; round < 3; round++) {
+            for (int digit = 0; digit < 10; digit++) {
+                String value = anonymize(anonymizer, round + "x" + digit);
+                assertNotEquals(round + "x" + digit, value);
+            }
+        }
+        for (int digit = 1; digit < 10; digit++) {
+            assertNotEquals(String.valueOf(digit), anonymize(anonymizer, String.valueOf(digit)));
+        }
+    }
+
     @Test
     public void phoneKeepsFormatAndPrefix() {
         String phone = anonymize(salted(new PhoneAnonymizer()), "+420 777 123 456");

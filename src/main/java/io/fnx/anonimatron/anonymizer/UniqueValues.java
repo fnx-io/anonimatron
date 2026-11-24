@@ -9,7 +9,8 @@ import java.util.function.IntFunction;
 /**
  * Hands out one generated value per key, never the same value for two keys and never the original
  * value itself. On a collision the next attempt is tried, so the result stays deterministic as long
- * as values are requested in the same order.
+ * as values are requested in the same order. When the space of values is too small to stay unique
+ * (one digit house numbers), the first candidate differing from the original is used anyway.
  */
 final class UniqueValues {
 
@@ -23,13 +24,24 @@ final class UniqueValues {
         if (known != null) {
             return known;
         }
+        String fallback = null;
         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
             String value = candidate.apply(attempt);
-            if (!value.equals(original) && issued.add(value)) {
+            if (value.equals(original)) {
+                continue;
+            }
+            if (issued.add(value)) {
                 byKey.put(key, value);
                 return value;
             }
+            if (fallback == null) {
+                fallback = value;
+            }
         }
-        throw new IllegalStateException("No unique value found after " + MAX_ATTEMPTS + " attempts.");
+        if (fallback == null) {
+            throw new IllegalStateException("No value different from the original found after " + MAX_ATTEMPTS + " attempts.");
+        }
+        byKey.put(key, fallback);
+        return fallback;
     }
 }
