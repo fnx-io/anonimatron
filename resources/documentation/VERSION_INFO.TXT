@@ -1,3 +1,59 @@
+*** Version 1.17-SNAPSHOT
+- Updated log4j to 2.25.4 to get rid of a CVE. This bothered some of
+  the security scanners like Nessus, even though Anonimatron is
+  less succeptible to an exploit of this vulnerability.
+- Updated iban4j to 3.2.10-RELEASE
+- Updated mssql-jdbc to 12.8.1.jre8
+- Updated commons-cli to 1.9.0
+- Updated HSQLDB test dependency to 2.7.3 and pinned it on the Java 8 compatible artifact.
+- Added a docker script to test Anonimatron with several Java versions.
+- Added the UK postcode anonymizer to the default anonymizers.
+- Fixed CountryCodeAnonymizer for newer JDK locale data with region identifiers.
+- Fixed issue #235 where encoding of CSV files caused a problem.
+- CsvFileReader and CsvFileWriter now support a delimiter parameter, see issue #192.
+- Configurations can now contain both tables and files. Anonimatron processes all configured tables and files, sharing synonyms across both phases.
+
+*** Version 1.16
+- Fixes for modern java versions, add-opens
+- Fixed a problem where Anonimatron ran out of heap memory
+
+*** Version 1.15
+- Fixed a problem where tables from other catalogs could prevent
+  fetching primary key information from the correct table,
+  fixes issues #105 and #106
+- Updated maven plugin versions
+- Updated several libraries to the latest 1.8 supporting version
+
+*** Version 1.14
+- Fixed a problem where generated Dutch BSN numbers could be
+  syntactically invalid, issue #99
+- Removed references to deprecated Hamcrest matchers in the
+  unittests, issue #94
+- Fixed a problem where RANDOMDIGITS was not downwards compatible
+  and required a digit mask, issue #95
+- Upgraded code to make better use of Java 8 features.
+- Upgraded bundled mysql-connector-j to 8.0.21, also requested in issue #101
+- Solved a problem where UkPostCodeAnonymizer would not set the Synonym
+  type and ignored the "shortlived" synonym configuration.
+- Solved a problem where discriminator configuration was parsed
+  incorrectly, see #86
+
+*** Version 1.13
+- Fixed OutOfMemoryError for tables with BLOBs by adding fetch size,
+  see pull request #83
+- Moved documentation to the Jekyll folder in /docs/documentation
+
+*** Version 1.12
+- Added mask parameter to DigitStringAnonymizer
+  (fixes issue #74, thanks to Balogh Tamás and Bartlomiej Komendarczuk)
+- Added UK Postalcode Anonymizer
+- Optimized Random number generators (less instantiations)
+- Fixed override problem with password, userid and jdbcurl
+  (pull request #69, thanks to Stephan Schrader)
+- Security, performance and readability fixes, as suggested by SonarCube,
+  see https://sonarcloud.io/dashboard?id=realrolfje_anonimatron)
+- Integrated documentation in the main development branch
+
 *** Version 1.11
 - Add numeric BSN support, closes issue #31
 - Ability to provide database connection parameters through

@@ -1,6 +1,10 @@
 package com.rolfje.anonimatron.commandline;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import static com.rolfje.anonimatron.Anonimatron.VERSION;
 
@@ -14,7 +18,7 @@ public class CommandLine {
     private static final String OPT_DRYRUN = "dryrun";
     private static final String OPT_CONFIGEXAMPLE = "configexample";
 
-    private static Options options = new Options()
+    private static final Options options = new Options()
             .addOption(OPT_CONFIGFILE, true,
                     "The XML Configuration file describing what to anonymize.")
             .addOption(OPT_SYNONYMFILE, true,
@@ -23,17 +27,17 @@ public class CommandLine {
             .addOption(OPT_CONFIGEXAMPLE, false,
                     "Prints out a demo/template configuration file.")
             .addOption(OPT_DRYRUN, false, "Do not make changes to the database.")
-            .addOption(OPT_JDBCURL, false,
+            .addOption(OPT_JDBCURL, true,
                     "The JDBC URL to connect to. " +
                             "If provided, overrides the value in the config file.")
-            .addOption(OPT_USERID, false,
+            .addOption(OPT_USERID, true,
                     "The user id for the database connection. " +
                             "If provided, overrides the value in the config file.")
-            .addOption(OPT_PASSWORD, false,
+            .addOption(OPT_PASSWORD, true,
                     "The password for the database connection. " +
                             "If provided, overrides the value in the config file.");
 
-    private org.apache.commons.cli.CommandLine clicommandLine;
+    private final org.apache.commons.cli.CommandLine clicommandLine;
 
     public CommandLine(String[] arguments) throws ParseException {
         CommandLineParser parser = new DefaultParser();
@@ -43,7 +47,7 @@ public class CommandLine {
     public static void printHelp() {
         System.out
                 .println("\nThis is Anonimatron " + VERSION + ", a command line tool to consistently \n"
-                        + "replace live data in your database or data files with data data which \n"
+                        + "replace live data in your database or data files with data which \n"
                         + "can not easily be traced back to the original data.\n"
                         + "You can use this tool to transform a dump from a production \n"
                         + "database into a large representative dataset you can \n"

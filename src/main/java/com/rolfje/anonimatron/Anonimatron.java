@@ -9,7 +9,11 @@ import com.rolfje.anonimatron.file.FileAnonymizerService;
 import com.rolfje.anonimatron.jdbc.JdbcAnonymizerService;
 import org.apache.commons.cli.UnrecognizedOptionException;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -85,15 +89,21 @@ public class Anonimatron {
 		AnonymizerService anonymizerService = new AnonymizerService(synonymCache);
 		anonymizerService.registerAnonymizers(config.getAnonymizerClasses());
 
-		if (config.getTables() != null && config.getTables().size() > 0) {
+		boolean didWork = false;
+
+		if (config.getTables() != null && !config.getTables().isEmpty()) {
 			JdbcAnonymizerService jdbcService = new JdbcAnonymizerService(config, anonymizerService);
 			jdbcService.anonymize();
+			didWork = true;
+		}
 
-		} else if (config.getFiles() != null && config.getFiles().size() > 0) {
+		if (config.getFiles() != null && !config.getFiles().isEmpty()) {
 			FileAnonymizerService fileService = new FileAnonymizerService(config, anonymizerService);
 			fileService.anonymize();
+			didWork = true;
+		}
 
-		} else {
+		if (!didWork) {
 			System.err.println("Configuration does not contain <table> or <file> elements. Nothing done.");
 		}
 
@@ -126,18 +136,18 @@ public class Anonimatron {
 		JdbcAnonymizerService s = new JdbcAnonymizerService();
 
 		Map<String, String> supportedJdbc = s.getSupportedDriverURLs();
-		int col1width = getTextWidth(supportedJdbc.keySet()) + 2;
-		System.out.println(String.format("%1$-" + col1width + "s",
-				"Jdbc URL format") + "By Driver");
+		int col1width = getTextWidth(supportedJdbc.keySet());
+
+		String twoColumnFormat = "%-" + col1width + "s %s";
+		System.out.println(String.format(twoColumnFormat, "Jdbc URL format", "By Driver"));
+
 		for (Entry<String, String> entry : supportedJdbc.entrySet()) {
-			String col1 = String.format("%1$-" + col1width + "s",
-					entry.getKey());
-			System.out.println(col1 + entry.getValue());
+			System.out.println(String.format(twoColumnFormat, entry.getKey(), entry.getValue()));
 		}
 
 		System.out
 				.println("\nAnonimatron will try to autodetect drivers which are\n"
-						+ "stored in the lib directory. Add you driver there.\n\n");
+						+ "stored in the lib directory. Add your driver there.\n\n");
 
 		System.out.println("Demo configuration file for Anonymatron "+VERSION+":");
 		System.out.println(Configuration.getDemoConfiguration());

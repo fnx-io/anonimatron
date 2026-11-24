@@ -5,21 +5,29 @@ import com.rolfje.anonimatron.anonymizer.CharacterStringAnonymizer;
 import com.rolfje.anonimatron.anonymizer.StringAnonymizer;
 import com.rolfje.anonimatron.file.CsvFileReader;
 import com.rolfje.anonimatron.file.CsvFileWriter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 public class Configuration {
-	private static Logger LOG = Logger.getLogger(Configuration.class);
+	private static final Logger LOG = LogManager.getLogger(Configuration.class);
 
 	private String jdbcurl;
 	private String userid;
@@ -45,8 +53,10 @@ public class Configuration {
 		Unmarshaller unmarshaller = new Unmarshaller(mapping);
 
 		File file = new File(filename);
-		Reader reader = new FileReader(file);
-		Configuration configuration = (Configuration)unmarshaller.unmarshal(reader);
+		Configuration configuration;
+		try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+			configuration = (Configuration)unmarshaller.unmarshal(reader);
+		}
 		LOG.info("Configuration read from " + file.getAbsoluteFile());
 
 		configuration.sanityCheck();
@@ -60,6 +70,15 @@ public class Configuration {
 					LOG.info(
 							String.format("No column definitions for input %s, lines will be passed through.",
 									dataFile.getInFile()));
+				}
+				try {
+					Charset.forName(dataFile.getEncoding());
+				} catch (Exception e) {
+					throw new RuntimeException(
+							String.format("Invalid encoding '%s' configured for input %s.",
+									dataFile.getEncoding(),
+									dataFile.getInFile()),
+							e);
 				}
 			}
 		}
@@ -154,19 +173,19 @@ public class Configuration {
 
 		conf.setSalt("examplesalt");
 
-		List<String> anonymizers = new ArrayList<String>();
+		List<String> anonymizers = new ArrayList<>();
 		anonymizers.add("my.demo.java.SmurfAnonymizer");
 		anonymizers.add("org.sf.anonimatron.CommunityAnonymizer");
 		conf.setAnonymizerClasses(anonymizers);
 
-		List<Table> tables = new ArrayList<Table>();
+		List<Table> tables = new ArrayList<>();
 		tables.add(getTable("CUSTOM_TYPES_TABLE", getColumns()));
 		tables.add(getTable("DEFAULT_TYPES_TABLE", getDefaultColumns()));
 		tables.add(getDiscriminatorExample());
 
 		conf.setTables(tables);
 
-		List<DataFile> dataFiles = new ArrayList<DataFile>();
+		List<DataFile> dataFiles = new ArrayList<>();
 		dataFiles.add(getDataFile("mydatafile.in.csv", "mydatafile.out.csv", getFileColumns()));
 		dataFiles.add(getDataFile("default_types.in.csv", "default_types.out.csv", getDefaultColumns()));
 		dataFiles.add(getDataFile("nocolumns.in.csv","nocolumns.out.csv", null));
@@ -183,6 +202,7 @@ public class Configuration {
 		DataFile t = new DataFile();
 		t.setInFile(inFile);
 		t.setReader(CsvFileReader.class.getCanonicalName());
+		t.setEncoding(DataFile.DEFAULT_ENCODING);
 
 		t.setOutFile(outFile);
 		t.setWriter(CsvFileWriter.class.getCanonicalName());
@@ -197,7 +217,7 @@ public class Configuration {
 		discriminatortable.setName("DISCRIMINATOR_DEMO_TABLE");
 
 		// The default column contains a "phone number" of some sort
-		List<Column> defaultcolumns = new ArrayList<Column>();
+		List<Column> defaultcolumns = new ArrayList<>();
 		Column defaultColumn = new Column();
 		defaultColumn.setName("CONTACTINFO");
 		defaultColumn.setType("RANDOMDIGITS");
@@ -205,7 +225,7 @@ public class Configuration {
 		discriminatortable.setColumns(defaultcolumns);
 
 		// The specific column contains an "email address"
-		List<Column> discriminatecolumns = new ArrayList<Column>();
+		List<Column> discriminatecolumns = new ArrayList<>();
 		Column discriminateColumn = new Column();
 		discriminateColumn.setName("CONTACTINFO");
 		discriminateColumn.setType("EMAIL_ADDRESS");
@@ -218,7 +238,7 @@ public class Configuration {
 		discriminator.setValue("email address");
 		discriminator.setColumns(discriminatecolumns);
 
-		List<Discriminator> discriminators = new ArrayList<Discriminator>();
+		List<Discriminator> discriminators = new ArrayList<>();
 		discriminators.add(discriminator);
 
 		discriminatortable.setDiscriminators(discriminators);
@@ -234,7 +254,7 @@ public class Configuration {
 
 
 	private static List<Column> getFileColumns() throws Exception {
-		List<Column> columns = new ArrayList<Column>();
+		List<Column> columns = new ArrayList<>();
 
 		AnonymizerService as = new AnonymizerService();
 		String[] types = as.getCustomAnonymizerTypes().toArray(new String[]{});
@@ -251,7 +271,7 @@ public class Configuration {
 	}
 
 	private static List<Column> getColumns() throws Exception {
-		List<Column> columns = new ArrayList<Column>();
+		List<Column> columns = new ArrayList<>();
 
 		AnonymizerService as = new AnonymizerService();
 		Set<String> types = as.getCustomAnonymizerTypes();
@@ -277,11 +297,11 @@ public class Configuration {
 			Column c = new Column();
 			c.setName("A_PARAMETERIZED_COLUMN");
 			c.setType(new CharacterStringAnonymizer().getType());
-			c.setParameters(
-					new HashMap<String, String>(){{
-						put(CharacterStringAnonymizer.PARAMETER, "ABC123!*&");
-					}}
-			);
+
+			HashMap<String, String> parameters = new HashMap<>();
+			parameters.put(CharacterStringAnonymizer.PARAMETER, "ABC123!*&");
+			c.setParameters(parameters);
+
 			columns.add(c);
 		}
 
@@ -290,7 +310,7 @@ public class Configuration {
 	}
 
 	private static List<Column> getDefaultColumns() throws Exception {
-		List<Column> columns = new ArrayList<Column>();
+		List<Column> columns = new ArrayList<>();
 
 		AnonymizerService as = new AnonymizerService();
 		Set<String> types = as.getDefaultAnonymizerTypes();

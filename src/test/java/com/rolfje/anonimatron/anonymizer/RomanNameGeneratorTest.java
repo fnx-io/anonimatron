@@ -5,14 +5,15 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RomanNameGeneratorTest extends TestCase {
-	Logger LOG = Logger.getLogger(RomanNameGenerator.class);
+	Logger LOG = LogManager.getLogger(RomanNameGenerator.class);
 
 	public void testUniqueness() throws Exception {
 		RomanNameGenerator r = new RomanNameGenerator();
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 
 		for (int i = 0; i < 10000; i++) {
 			String name = (String) r.anonymize("fakename", 100, false).getTo();
@@ -32,7 +33,7 @@ public class RomanNameGeneratorTest extends TestCase {
 	public void xxxtestMaxNames() throws Exception {
 		
 		RomanNameGenerator r = new RomanNameGenerator();
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 
 		try {
 			String name;

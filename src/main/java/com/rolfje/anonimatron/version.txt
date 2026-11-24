@@ -1,1 +1,1 @@
-MA-SNAPSHOT
+1.17-fnx-1

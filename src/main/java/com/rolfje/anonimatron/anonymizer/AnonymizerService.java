@@ -3,20 +3,21 @@ package com.rolfje.anonimatron.anonymizer;
 import com.rolfje.anonimatron.configuration.Column;
 import com.rolfje.anonimatron.synonyms.NullSynonym;
 import com.rolfje.anonimatron.synonyms.Synonym;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Date;
 import java.util.*;
 
 public class AnonymizerService {
-	private static Logger LOG = Logger.getLogger(AnonymizerService.class);
+	private static final Logger LOG = LogManager.getLogger(AnonymizerService.class);
 
-	private Map<String, Anonymizer> customAnonymizers = new HashMap<String, Anonymizer>();
-	private Map<String, String> defaultTypeMapping = new HashMap<String, String>();
+	private Map<String, Anonymizer> customAnonymizers = new HashMap<>();
+	private Map<String, String> defaultTypeMapping = new HashMap<>();
 
 	private SynonymCache synonymCache;
 
-	private Set<String> seenTypes = new HashSet<String>();
+	private Set<String> seenTypes = new HashSet<>();
 
 	public AnonymizerService() throws Exception {
 		this.synonymCache = new SynonymCache();
@@ -35,6 +36,8 @@ public class AnonymizerService {
 		registerAnonymizer(new CharacterStringPrefetchAnonymizer());
 		registerAnonymizer(new DateAnonymizer());
 		registerAnonymizer(new IbanAnonymizer());
+		registerAnonymizer(new UkPostCodeAnonymizer());
+		registerAnonymizer(new IPAddressV4Anonymizer());
 
 		registerAnonymizer(new CountryCodeAnonymizer());
 
@@ -80,6 +83,8 @@ public class AnonymizerService {
 	}
 
 	public Synonym anonymize(Column column, Object from) {
+		from = DatabaseValueNormalizer.normalize(from);
+
 		if (from == null) {
 			return new NullSynonym(column.getType());
 		}
@@ -156,6 +161,8 @@ public class AnonymizerService {
 	}
 
 	public boolean prepare(String type, Object databaseColumnValue) {
+		databaseColumnValue = DatabaseValueNormalizer.normalize(databaseColumnValue);
+
 		Anonymizer anonymizer = getAnonymizer(type);
 		if (anonymizer != null && anonymizer instanceof Prefetcher){
 			((Prefetcher)anonymizer).prefetch(databaseColumnValue);

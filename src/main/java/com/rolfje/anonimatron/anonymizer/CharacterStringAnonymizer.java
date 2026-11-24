@@ -12,56 +12,55 @@ import java.util.Random;
  */
 public class CharacterStringAnonymizer implements Anonymizer {
 
-	public static String PARAMETER = "characters";
+    public static final String PARAMETER = "characters";
 
-	protected String CHARS;
+    protected String CHARS;
 
-	public CharacterStringAnonymizer() {
-		CHARS = getDefaultCharacterString();
-	}
+    protected static final Random RANDOM = new Random();
 
-	protected String getDefaultCharacterString() {
-		return "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	}
-	
-	@Override
-	public String getType() {
-		return "RANDOMCHARACTERS";
-	}
+    public CharacterStringAnonymizer() {
+        CHARS = getDefaultCharacterString();
+    }
 
-	@Override
-	public Synonym anonymize(Object from, int size, boolean shortlived, Map<String, String> parameters) {
-		if (parameters == null || !parameters.containsKey("characters")) {
-			throw new UnsupportedOperationException("Please provide '" + PARAMETER + "' as configuration parameter.");
-		}
-		return anonymize(from, size, shortlived, parameters.get(PARAMETER));
-	}
+    protected String getDefaultCharacterString() {
+        return "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
 
-	@Override
-	public Synonym anonymize(Object from, int size, boolean shortlived) {
-		return anonymize(from, size, shortlived, CHARS);
-	}
+    @Override
+    public String getType() {
+        return "RANDOMCHARACTERS";
+    }
 
-	private Synonym anonymize(Object from, int size, boolean shortlived, String characters) {
-		String fromString = from.toString();
-		Random r = new Random();
+    @Override
+    public Synonym anonymize(Object from, int size, boolean shortlived, Map<String, String> parameters) {
+        if (parameters == null || !parameters.containsKey(PARAMETER)) {
+            throw new UnsupportedOperationException("Please provide '" + PARAMETER + "' as configuration parameter.");
+        }
+        return anonymize(from, size, shortlived, parameters.get(PARAMETER));
+    }
 
-		int length = fromString.length();
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < length; i++) {
-			sb.append(characters.charAt(r.nextInt(characters.length())));
-		}
+    @Override
+    public Synonym anonymize(Object from, int size, boolean shortlived) {
+        return anonymize(from, size, shortlived, CHARS);
+    }
 
-		String to = sb.toString();
+    private Synonym anonymize(Object from, int size, boolean shortlived, String characters) {
+        String fromString = from.toString();
 
-		StringSynonym stringSynonym = new StringSynonym(
-				getType(),
-				fromString,
-				to,
-				shortlived
-		);
+        int length = fromString.length();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append(characters.charAt(RANDOM.nextInt(characters.length())));
+        }
 
-		return stringSynonym;
-	}
+        String to = sb.toString();
+
+        return new StringSynonym(
+                getType(),
+                fromString,
+                to,
+                shortlived
+        );
+    }
 
 }
