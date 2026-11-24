@@ -35,15 +35,15 @@ final class CzechText {
 
     /**
      * Replaces every digit with a random one; letters and separators stay. The first digit of each
-     * run stays non-zero when it was, so that numbers keep their magnitude.
+     * run of digits is never zero, whatever the original was, so that masking a masked value
+     * draws the same digits again.
      */
     static String maskDigits(String text, Random random) {
         StringBuilder masked = new StringBuilder(text.length());
         boolean firstDigit = true;
         for (char c : text.toCharArray()) {
             if (Character.isDigit(c)) {
-                boolean keepNonZero = firstDigit && c != '0';
-                masked.append(keepNonZero ? (char) ('1' + random.nextInt(9)) : (char) ('0' + random.nextInt(10)));
+                masked.append(firstDigit ? (char) ('1' + random.nextInt(9)) : (char) ('0' + random.nextInt(10)));
                 firstDigit = false;
             } else {
                 masked.append(c);

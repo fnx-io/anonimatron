@@ -13,7 +13,8 @@ final class RodneCislo {
 
     private static final Pattern FORMAT = Pattern.compile("(\\d{2})(\\d{2})(\\d{2})(/?)(\\d{3,4})");
     private static final int FIRST_TEN_DIGIT_YEAR = 1954;
-    private static final int YEAR_SPREAD = 2;
+    /** Births are kept within the same period of this many years (1975–1979, 1980–1984...). */
+    private static final int PERIOD_YEARS = 5;
 
     final int year;
     final Gender gender;
@@ -44,17 +45,18 @@ final class RodneCislo {
     }
 
     /**
-     * A new valid birth number of the same gender, born within two years of the original and
-     * in the same format.
+     * A new valid birth number of the same gender and format, born in the same five year period
+     * (1975–1979). Anonymizing the result again keeps gender, period and format.
      */
     String similar(Random random) {
-        int newYear = year - YEAR_SPREAD + random.nextInt(2 * YEAR_SPREAD + 1);
+        int first = year - Math.floorMod(year, PERIOD_YEARS);
+        int last = first + PERIOD_YEARS - 1;
         if (year >= FIRST_TEN_DIGIT_YEAR) {
-            newYear = Math.max(newYear, FIRST_TEN_DIGIT_YEAR);
+            first = Math.max(first, FIRST_TEN_DIGIT_YEAR);
         } else {
-            newYear = Math.min(newYear, FIRST_TEN_DIGIT_YEAR - 1);
+            last = Math.min(last, FIRST_TEN_DIGIT_YEAR - 1);
         }
-        return generate(random, newYear, gender, slash);
+        return generate(random, first + random.nextInt(last - first + 1), gender, slash);
     }
 
     static String generate(Random random, int year, Gender gender, boolean slash) {

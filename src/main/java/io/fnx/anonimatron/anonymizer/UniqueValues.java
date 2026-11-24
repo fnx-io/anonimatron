@@ -20,6 +20,14 @@ final class UniqueValues {
     private final Map<String, String> byKey = new HashMap<>();
     private final Set<String> issued = new HashSet<>();
 
+    /**
+     * Marks a value as taken before anything is generated, so that no replacement equals an
+     * original value still in the database (it would break a unique index while rows are updated).
+     */
+    synchronized void reserve(String value) {
+        issued.add(value);
+    }
+
     synchronized String get(String key, String original, IntFunction<String> candidate) {
         String known = byKey.get(key);
         if (known != null) {

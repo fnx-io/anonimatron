@@ -33,13 +33,9 @@ final class CzechIdentifiers {
      */
     String identifier(String value) {
         String trimmed = value.trim();
-        int bodyStart = 0;
-        while (bodyStart < trimmed.length() && !Character.isDigit(trimmed.charAt(bodyStart))) {
-            bodyStart++;
-        }
-        String prefix = trimmed.substring(0, bodyStart);
-        String body = trimmed.substring(bodyStart);
-        if (body.matches("\\d{1,8}") && (prefix.isEmpty() || prefix.trim().matches("\\p{L}{2}"))) {
+        String prefix = prefix(trimmed);
+        String body = trimmed.substring(prefix.length());
+        if (isIco(prefix, body)) {
             return prefix + ico(body);
         }
         if (RodneCislo.parse(body) != null) {
@@ -48,9 +44,43 @@ final class CzechIdentifiers {
         return others.get(trimmed, trimmed, attempt -> CzechText.maskDigits(trimmed, random("OTHER", trimmed, attempt)));
     }
 
+    /** Reserves an original IČO, DIČ or birth number, so that no replacement equals it. */
+    void reserveIdentifier(String value) {
+        String trimmed = value.trim();
+        String prefix = prefix(trimmed);
+        String body = trimmed.substring(prefix.length());
+        if (isIco(prefix, body)) {
+            icos.reserve(icoKey(body));
+        } else if (RodneCislo.parse(body) != null) {
+            reserveBirthNumber(body);
+        } else {
+            others.reserve(trimmed);
+        }
+    }
+
+    void reserveBirthNumber(String value) {
+        birthNumbers.reserve(CzechText.digitsOnly(value));
+    }
+
+    private static String prefix(String trimmed) {
+        int bodyStart = 0;
+        while (bodyStart < trimmed.length() && !Character.isDigit(trimmed.charAt(bodyStart))) {
+            bodyStart++;
+        }
+        return trimmed.substring(0, bodyStart);
+    }
+
+    private static boolean isIco(String prefix, String body) {
+        return body.matches("\\d{1,8}") && (prefix.isEmpty() || prefix.trim().matches("\\p{L}{2}"));
+    }
+
+    private static String icoKey(String digits) {
+        return String.format("%8s", digits).replace(' ', '0');
+    }
+
     /** IČO; shorter numbers are IČO that lost their leading zeros. */
     String ico(String digits) {
-        String key = String.format("%8s", digits).replace(' ', '0');
+        String key = icoKey(digits);
         return icos.get(key, key, attempt -> Ico.generate(random("ICO", key, attempt)));
     }
 

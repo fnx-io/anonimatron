@@ -2,7 +2,7 @@
 
 Fork of [realrolfje/anonimatron](https://github.com/realrolfje/anonimatron) with deterministic
 Czech anonymizers in `io.fnx.anonimatron.anonymizer`. Maven coordinates
-`io.fnx:anonimatron:1.17-fnx-4`, Java 17.
+`io.fnx:anonimatron:1.17-fnx-6`, Java 17.
 
 **Deterministic:** the replacement is computed from HMAC-SHA256(salt, original value), so the same
 database anonymized twice with the same secret salt gives the same result, without keeping a
@@ -19,7 +19,7 @@ Register the anonymizers you use with `<anonymizerclass>` and use their types:
 | `COMPANYNAME` | `CompanyNameAnonymizer` | unique made-up company with the original legal form; a person's name (sole trader) like `FULLNAME` |
 | `ICO` | `IcoNumberAnonymizer` | valid unique IČO; a birth number stays a birth number |
 | `DIC` | `DicNumberAnonymizer` | `CZ` + anonymized IČO (matches the `ICO` column) or `CZ` + birth number |
-| `RC` | `PersonalIdentificationNumberAnonymizer` | valid unique rodné číslo, same gender, born ±2 years, same format |
+| `RC` | `PersonalIdentificationNumberAnonymizer` | valid unique rodné číslo, same gender, born in the same five year period, same format |
 | `PHONE` | `PhoneAnonymizer` | same format, country code and first digit |
 | `EMAIL` | `EmailAnonymizer` | unique `anonym.…@example.com` for every address in the value |
 | `BANKACCOUNT` | `BankAccountAnonymizer` | Czech account passing the mod 11 check, same bank code |
@@ -29,6 +29,12 @@ Register the anonymizers you use with `<anonymizerclass>` and use their types:
 
 Unique values (IČO, birth numbers, e-mails, companies, `NUMBERMASK`) resolve a collision with the
 next attempt; with the same data the result is the same on every run.
+
+**Row-based use (`CzechFaker`):** the same generators seeded by a database row instead of the
+value — `CzechFaker.random(salt, "table.column:" + primaryKey)`. The current value is used only
+for its shape (gender, legal form, format, five year period of birth), and the result has the same
+shape, so anonymizing an already anonymized row again changes nothing. Used by the Lesis
+anonymizer, which walks the tables itself and handles unique columns.
 
 # Anonimatron [![Maven version](https://img.shields.io/maven-central/v/com.rolfje.anonimatron/anonimatron.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.rolfje.anonimatron%22%20AND%20a:%22anonimatron%22) [![CI](https://github.com/realrolfje/anonimatron/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/realrolfje/anonimatron/actions/workflows/ci.yml)
 

@@ -11,10 +11,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Replaces Czech personal names word by word. Every anonymizer uses the same seeds for a first
- * name or a surname, so "Jan" in a first name column, "Jan Novák" in a full name column and
- * "Ing. Jan Novák" in a contact column all become the same person. The replacement keeps the
- * gender: Nováková gets the female form of the surname Novák gets.
+ * Replaces Czech personal names word by word, keeping the gender: Nováková gets the female form
+ * of the surname Novák gets. Seeded by the value (every anonymizer uses the same seeds, so "Jan"
+ * in a first name column and "Ing. Jan Novák" in a contact column become the same person) or by
+ * one random sequence of a database row.
  */
 final class PersonNames {
 
@@ -28,14 +28,26 @@ final class PersonNames {
             "mvdr", "mddr", "pharmdr", "thdr", "thlic", "doc", "prof", "dis", "ba", "bba", "mba", "msc", "ma",
             "llm", "arch", "art", "akad", "st", "ml", "dipl", "mph", "et", "pan", "pani", "sl"));
 
+    /** Seeded by the value; avoids giving a name its own value. */
     private final Seeds seeds;
+    /** Seeded by the row; must not depend on the value, so that a second run changes nothing. */
+    private final Random rowRandom;
 
     PersonNames(Seeds seeds) {
         this.seeds = seeds;
+        this.rowRandom = null;
+    }
+
+    PersonNames(Random rowRandom) {
+        this.seeds = null;
+        this.rowRandom = rowRandom;
     }
 
     String firstName(String word, Gender gender) {
         String key = CzechText.normalize(word);
+        if (rowRandom != null) {
+            return CzechText.matchCase(word, CzechNames.pickFirstName(gender, rowRandom));
+        }
         Random random = seeds.random(FIRST_NAME, gender + ":" + key, 0);
         String name = CzechNames.pickFirstName(gender, random);
         if (CzechText.normalize(name).equals(key)) {
@@ -45,6 +57,9 @@ final class PersonNames {
     }
 
     String surname(String word, Gender gender) {
+        if (rowRandom != null) {
+            return CzechText.matchCase(word, CzechNames.pickSurname(rowRandom).form(gender));
+        }
         String stem = CzechNames.surnameStem(word);
         Random random = seeds.random(SURNAME, stem, 0);
         CzechNames.Surname surname = CzechNames.pickSurname(random);

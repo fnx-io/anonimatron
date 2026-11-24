@@ -165,7 +165,7 @@ public class CzechAnonymizersTest {
         assertTrue(dic, dic.matches("CZ\\d{10}"));
         RodneCislo rc = RodneCislo.parse(dic.substring(2));
         assertEquals(Gender.FEMALE, rc.gender);
-        assertTrue(dic, Math.abs(rc.year - 1976) <= 2);
+        assertTrue(dic, rc.year >= 1975 && rc.year <= 1979);
         assertTrue(dic, RodneCislo.isValid(dic.substring(2)));
     }
 
@@ -176,7 +176,7 @@ public class CzechAnonymizersTest {
         assertTrue(male, male.matches("\\d{6}/\\d{4}"));
         assertTrue(male, RodneCislo.isValid(male));
         assertEquals(Gender.MALE, RodneCislo.parse(male).gender);
-        assertTrue(male, Math.abs(RodneCislo.parse(male).year - 1980) <= 2);
+        assertTrue(male, RodneCislo.parse(male).year >= 1980 && RodneCislo.parse(male).year <= 1984);
 
         String old = anonymize(anonymizer, "455101123");
         assertTrue(old, old.matches("\\d{9}"));
@@ -214,6 +214,21 @@ public class CzechAnonymizersTest {
     public void bankAccountWithOneDigitPrefixFinishes() {
         String account = anonymize(salted(new BankAccountAnonymizer()), "5-123456789/0100");
         assertTrue(account, account.matches("[1-9]-\\d{9}/0100"));
+    }
+
+    @Test
+    public void replacementNeverEqualsAReservedOriginal() {
+        for (int seed = 0; seed < 50; seed++) {
+            IcoNumberAnonymizer anonymizer = salted(new IcoNumberAnonymizer(), "reserve-salt-" + seed);
+            Set<String> originals = new HashSet<>();
+            for (int i = 0; i < 300; i++) {
+                originals.add(String.format("%08d", 10000000 + i * 7));
+            }
+            originals.forEach(anonymizer::prefetch);
+            for (String original : originals) {
+                assertFalse(originals.contains(anonymize(anonymizer, original)));
+            }
+        }
     }
 
     @Test
